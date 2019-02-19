@@ -183,7 +183,7 @@ function DateRangePickerInput(_ref) {
   }), React.createElement("div", _extends({}, css(styles.DateRangePickerInput_arrow), {
     "aria-hidden": "true",
     role: "presentation"
-  }), arrowIcon), isStartDateFocused && children, React.createElement(DateInput, {
+  }), arrowIcon), children, React.createElement(DateInput, {
     id: endDateId,
     placeholder: endDatePlaceholderText,
     displayValue: endDate,
@@ -203,7 +203,7 @@ function DateRangePickerInput(_ref) {
     verticalSpacing: verticalSpacing,
     small: small,
     regular: regular
-  }), isEndDateFocused && children, showClearDates && React.createElement("button", _extends({
+  }), children, showClearDates && React.createElement("button", _extends({
     type: "button",
     "aria-label": phrases.clearDates
   }, css(styles.DateRangePickerInput_clearDates, small && styles.DateRangePickerInput_clearDates__small, !customCloseIcon && styles.DateRangePickerInput_clearDates_default, !(startDate || endDate) && styles.DateRangePickerInput_clearDates__hide), {
