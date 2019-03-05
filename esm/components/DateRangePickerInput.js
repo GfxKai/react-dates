@@ -180,7 +180,7 @@ function DateRangePickerInput(_ref) {
     verticalSpacing: verticalSpacing,
     small: small,
     regular: regular
-  }), children, React.createElement("div", _extends({}, css(styles.DateRangePickerInput_arrow), {
+  }), React.createElement("div", _extends({}, css(styles.DateRangePickerInput_arrow), {
     "aria-hidden": "true",
     role: "presentation"
   }), arrowIcon), React.createElement(DateInput, {
@@ -209,7 +209,7 @@ function DateRangePickerInput(_ref) {
   }, css(styles.DateRangePickerInput_clearDates, small && styles.DateRangePickerInput_clearDates__small, !customCloseIcon && styles.DateRangePickerInput_clearDates_default, !(startDate || endDate) && styles.DateRangePickerInput_clearDates__hide), {
     onClick: onClearDates,
     disabled: disabled
-  }), closeIcon), inputIconPosition === ICON_AFTER_POSITION && inputIcon);
+  }), closeIcon), inputIconPosition === ICON_AFTER_POSITION && inputIcon, children);
 }
 
 DateRangePickerInput.propTypes = process.env.NODE_ENV !== "production" ? propTypes : {};

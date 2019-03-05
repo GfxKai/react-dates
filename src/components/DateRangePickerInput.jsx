@@ -235,8 +235,6 @@ function DateRangePickerInput({
         regular={regular}
       />
 
-      {children}
-
       {
         <div
           {...css(styles.DateRangePickerInput_arrow)}
@@ -287,6 +285,8 @@ function DateRangePickerInput({
       )}
 
       {inputIconPosition === ICON_AFTER_POSITION && inputIcon}
+
+      {children}
     </div>
   );
 }
