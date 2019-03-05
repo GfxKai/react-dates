@@ -183,7 +183,7 @@ function DateRangePickerInput(_ref) {
   }), React.createElement("div", _extends({}, css(styles.DateRangePickerInput_arrow), {
     "aria-hidden": "true",
     role: "presentation"
-  }), arrowIcon), children, React.createElement(DateInput, {
+  }), arrowIcon), React.createElement(DateInput, {
     id: endDateId,
     placeholder: endDatePlaceholderText,
     displayValue: endDate,

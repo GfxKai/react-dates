@@ -8,7 +8,7 @@
     "build": "npm run build:cjs && npm run build:esm && npm run build:css -- --optimize ",
     "build:cjs": "babel --env-name=cjs src/ -d lib/",
     "build:esm": "babel --env-name=esm src/ -d esm/",
-    "prebuild:css": "rimraf lib/css && mkdir lib\\css",
+    "prebuild:css": "rimraf lib/css && mkdir lib/css",
     "build:css": "node scripts/buildCSS.js",
     "clean": "rimraf lib esm",
     "precover": "rimraf coverage && npm run react",

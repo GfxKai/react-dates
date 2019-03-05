@@ -165,7 +165,7 @@ function (_ref) {
           isOutsideRange = _getCalendarDaySettin.isOutsideRange,
           ariaLabel = _getCalendarDaySettin.ariaLabel;
 
-      return React.createElement("td", _extends({}, css(styles.CalendarDay, useDefaultCursor && styles.CalendarDay__defaultCursor, styles.CalendarDay__default, isOutsideDay && styles.CalendarDay__outside, modifiers.has('today') && styles.CalendarDay__today, modifiers.has('first-day-of-week') && styles.CalendarDay__firstDayOfWeek, modifiers.has('last-day-of-week') && styles.CalendarDay__lastDayOfWeek, modifiers.has('hovered-offset') && styles.CalendarDay__hovered_offset, modifiers.has('highlighted-calendar') && styles.CalendarDay__highlighted_calendar, modifiers.has('blocked-minimum-nights') && styles.CalendarDay__blocked_minimum_nights, modifiers.has('blocked-calendar') && styles.CalendarDay__blocked_calendar, hoveredSpan && styles.CalendarDay__hovered_span, modifiers.has('selected-span') && styles.CalendarDay__selected_span, modifiers.has('last-in-range') && styles.CalendarDay__last_in_range, modifiers.has('selected-start') && styles.CalendarDay__selected_start, modifiers.has('selected-end') && styles.CalendarDay__selected_end, selected && styles.CalendarDay__selected, isOutsideRange && styles.CalendarDay__blocked_out_of_range, daySizeStyles), {
+      return React.createElement("td", _extends({}, css(styles.CalendarDay, useDefaultCursor && styles.CalendarDay__defaultCursor, styles.CalendarDay__default, isOutsideDay && styles.CalendarDay__outside, modifiers.has('today') && styles.CalendarDay__today, modifiers.has('first-day-of-week') && styles.CalendarDay__firstDayOfWeek, modifiers.has('last-day-of-week') && styles.CalendarDay__lastDayOfWeek, modifiers.has('hovered-offset') && styles.CalendarDay__hovered_offset, modifiers.has('hovered-start-first-possible-end') && styles.CalendarDay__hovered_start_first_possible_end, modifiers.has('hovered-start-blocked-minimum-nights') && styles.CalendarDay__hovered_start_blocked_min_nights, modifiers.has('highlighted-calendar') && styles.CalendarDay__highlighted_calendar, modifiers.has('blocked-minimum-nights') && styles.CalendarDay__blocked_minimum_nights, modifiers.has('blocked-calendar') && styles.CalendarDay__blocked_calendar, hoveredSpan && styles.CalendarDay__hovered_span, modifiers.has('selected-span') && styles.CalendarDay__selected_span, modifiers.has('selected-start') && styles.CalendarDay__selected_start, modifiers.has('selected-end') && styles.CalendarDay__selected_end, selected && !modifiers.has('selected-span') && styles.CalendarDay__selected, isOutsideRange && styles.CalendarDay__blocked_out_of_range, daySizeStyles), {
         role: "button" // eslint-disable-line jsx-a11y/no-noninteractive-element-to-interactive-role
         ,
         ref: this.setButtonRef,
@@ -277,12 +277,6 @@ export default withStyles(function (_ref2) {
         color: color.selectedSpan.color_active
       }
     },
-    CalendarDay__last_in_range: {
-      borderStyle: 'solid',
-      ':hover': {
-        borderStyle: 'solid'
-      }
-    },
     CalendarDay__selected: {
       background: color.selected.backgroundColor,
       border: "1px double ".concat(color.selected.borderColor),
@@ -342,6 +336,14 @@ export default withStyles(function (_ref2) {
         border: "1px solid ".concat(color.blocked_out_of_range.borderColor),
         color: color.blocked_out_of_range.color_active
       }
+    },
+    CalendarDay__hovered_start_first_possible_end: {
+      background: color.core.borderLighter,
+      border: "1px double ".concat(color.core.borderLighter)
+    },
+    CalendarDay__hovered_start_blocked_min_nights: {
+      background: color.core.borderLighter,
+      border: "1px double ".concat(color.core.borderLight)
     },
     CalendarDay__selected_start: {},
     CalendarDay__selected_end: {},

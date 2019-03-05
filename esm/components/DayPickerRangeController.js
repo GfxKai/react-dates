@@ -73,6 +73,7 @@ var propTypes = process.env.NODE_ENV !== "production" ? forbidExtraProps({
   isOutsideRange: PropTypes.func,
   isDayBlocked: PropTypes.func,
   isDayHighlighted: PropTypes.func,
+  getMinNightsForHoverDate: PropTypes.func,
   // DayPicker props
   renderMonthText: mutuallyExclusiveProps(PropTypes.func, 'renderMonthText', 'renderMonthElement'),
   renderMonthElement: mutuallyExclusiveProps(PropTypes.func, 'renderMonthText', 'renderMonthElement'),
@@ -131,6 +132,7 @@ var defaultProps = {
   isOutsideRange: function isOutsideRange() {},
   isDayBlocked: function isDayBlocked() {},
   isDayHighlighted: function isDayHighlighted() {},
+  getMinNightsForHoverDate: function getMinNightsForHoverDate() {},
   // DayPicker props
   renderMonthText: null,
   enableOutsideDays: false,
@@ -254,6 +256,12 @@ function (_ref) {
       },
       'last-day-of-week': function lastDayOfWeek(day) {
         return _this.isLastDayOfWeek(day);
+      },
+      'hovered-start-first-possible-end': function hoveredStartFirstPossibleEnd(day, hoverDate) {
+        return _this.isFirstPossibleEndDateForHoveredStartDate(day, hoverDate);
+      },
+      'hovered-start-blocked-minimum-nights': function hoveredStartBlockedMinimumNights(day, hoverDate) {
+        return _this.doesNotMeetMinNightsForHoveredStartDate(day, hoverDate);
       }
     };
 
@@ -294,6 +302,7 @@ function (_ref) {
       var startDate = nextProps.startDate,
           endDate = nextProps.endDate,
           focusedInput = nextProps.focusedInput,
+          getMinNightsForHoverDate = nextProps.getMinNightsForHoverDate,
           minimumNights = nextProps.minimumNights,
           isOutsideRange = nextProps.isOutsideRange,
           isDayBlocked = nextProps.isDayBlocked,
@@ -314,6 +323,7 @@ function (_ref) {
           prevInitialVisibleMonth = _this$props.initialVisibleMonth,
           prevNumberOfMonths = _this$props.numberOfMonths,
           prevEnableOutsideDays = _this$props.enableOutsideDays;
+      var hoverDate = this.state.hoverDate;
       var visibleDays = this.state.visibleDays;
       var recomputeOutsideRange = false;
       var recomputeDayBlocked = false;
@@ -443,6 +453,20 @@ function (_ref) {
             }
           });
         });
+      }
+
+      if (!this.isTouchDevice && didFocusChange && hoverDate && !this.isBlocked(hoverDate)) {
+        var minNightsForHoverDate = getMinNightsForHoverDate(hoverDate);
+
+        if (minNightsForHoverDate > 0 && focusedInput === END_DATE) {
+          modifiers = this.deleteModifierFromRange(modifiers, hoverDate.clone().add(1, 'days'), hoverDate.clone().add(minNightsForHoverDate, 'days'), 'hovered-start-blocked-minimum-nights');
+          modifiers = this.deleteModifier(modifiers, hoverDate.clone().add(minNightsForHoverDate, 'days'), 'hovered-start-first-possible-end');
+        }
+
+        if (minNightsForHoverDate > 0 && focusedInput === START_DATE) {
+          modifiers = this.addModifierToRange(modifiers, hoverDate.clone().add(1, 'days'), hoverDate.clone().add(minNightsForHoverDate, 'days'), 'hovered-start-blocked-minimum-nights');
+          modifiers = this.addModifier(modifiers, hoverDate.clone().add(minNightsForHoverDate, 'days'), 'hovered-start-first-possible-end');
+        }
       }
 
       if (minimumNights > 0 && startDate && focusedInput === END_DATE) {
@@ -596,6 +620,7 @@ function (_ref) {
           startDate = _this$props4.startDate,
           endDate = _this$props4.endDate,
           focusedInput = _this$props4.focusedInput,
+          getMinNightsForHoverDate = _this$props4.getMinNightsForHoverDate,
           minimumNights = _this$props4.minimumNights,
           startDateOffset = _this$props4.startDateOffset,
           endDateOffset = _this$props4.endDateOffset;
@@ -666,6 +691,24 @@ function (_ref) {
               modifiers = this.addModifierToRange(modifiers, newStartSpan, newEndSpan, 'after-hovered-start');
             }
           }
+
+          if (hoverDate && !this.isBlocked(hoverDate)) {
+            var minNightsForPrevHoverDate = getMinNightsForHoverDate(hoverDate);
+
+            if (minNightsForPrevHoverDate > 0 && focusedInput === START_DATE) {
+              modifiers = this.deleteModifierFromRange(modifiers, hoverDate.clone().add(1, 'days'), hoverDate.clone().add(minNightsForPrevHoverDate, 'days'), 'hovered-start-blocked-minimum-nights');
+              modifiers = this.deleteModifier(modifiers, hoverDate.clone().add(minNightsForPrevHoverDate, 'days'), 'hovered-start-first-possible-end');
+            }
+          }
+
+          if (!this.isBlocked(day)) {
+            var minNightsForHoverDate = getMinNightsForHoverDate(day);
+
+            if (minNightsForHoverDate > 0 && focusedInput === START_DATE) {
+              modifiers = this.addModifierToRange(modifiers, day.clone().add(1, 'days'), day.clone().add(minNightsForHoverDate, 'days'), 'hovered-start-blocked-minimum-nights');
+              modifiers = this.addModifier(modifiers, day.clone().add(minNightsForHoverDate, 'days'), 'hovered-start-first-possible-end');
+            }
+          }
         }
 
         this.setState({
@@ -681,6 +724,8 @@ function (_ref) {
       var _this$props5 = this.props,
           startDate = _this$props5.startDate,
           endDate = _this$props5.endDate,
+          focusedInput = _this$props5.focusedInput,
+          getMinNightsForHoverDate = _this$props5.getMinNightsForHoverDate,
           minimumNights = _this$props5.minimumNights;
       var _this$state2 = this.state,
           hoverDate = _this$state2.hoverDate,
@@ -709,6 +754,15 @@ function (_ref) {
         var _endSpan4 = startDate.clone().add(minimumNights + 1, 'days');
 
         modifiers = this.deleteModifierFromRange(modifiers, startSpan, _endSpan4, 'after-hovered-start');
+      }
+
+      if (!this.isBlocked(hoverDate)) {
+        var minNightsForHoverDate = getMinNightsForHoverDate(hoverDate);
+
+        if (minNightsForHoverDate > 0 && focusedInput === START_DATE) {
+          modifiers = this.deleteModifierFromRange(modifiers, hoverDate.clone().add(1, 'days'), hoverDate.clone().add(minNightsForHoverDate, 'days'), 'hovered-start-blocked-minimum-nights');
+          modifiers = this.deleteModifier(modifiers, hoverDate.clone().add(minNightsForHoverDate, 'days'), 'hovered-start-first-possible-end');
+        }
       }
 
       this.setState({
@@ -1055,12 +1109,28 @@ function (_ref) {
       return isOutsideRange(moment(day).subtract(minimumNights, 'days'));
     }
   }, {
+    key: "doesNotMeetMinNightsForHoveredStartDate",
+    value: function doesNotMeetMinNightsForHoveredStartDate(day, hoverDate) {
+      var _this$props16 = this.props,
+          focusedInput = _this$props16.focusedInput,
+          getMinNightsForHoverDate = _this$props16.getMinNightsForHoverDate;
+      if (focusedInput !== END_DATE) return false;
+
+      if (hoverDate && !this.isBlocked(hoverDate)) {
+        var minNights = getMinNightsForHoverDate(hoverDate);
+        var dayDiff = day.diff(hoverDate.clone().startOf('day').hour(12), 'days');
+        return dayDiff < minNights && dayDiff >= 0;
+      }
+
+      return false;
+    }
+  }, {
     key: "isDayAfterHoveredStartDate",
     value: function isDayAfterHoveredStartDate(day) {
-      var _this$props16 = this.props,
-          startDate = _this$props16.startDate,
-          endDate = _this$props16.endDate,
-          minimumNights = _this$props16.minimumNights;
+      var _this$props17 = this.props,
+          startDate = _this$props17.startDate,
+          endDate = _this$props17.endDate,
+          minimumNights = _this$props17.minimumNights;
 
       var _ref2 = this.state || {},
           hoverDate = _ref2.hoverDate;
@@ -1085,9 +1155,9 @@ function (_ref) {
   }, {
     key: "isInHoveredSpan",
     value: function isInHoveredSpan(day) {
-      var _this$props17 = this.props,
-          startDate = _this$props17.startDate,
-          endDate = _this$props17.endDate;
+      var _this$props18 = this.props,
+          startDate = _this$props18.startDate,
+          endDate = _this$props18.endDate;
 
       var _ref4 = this.state || {},
           hoverDate = _ref4.hoverDate;
@@ -1100,9 +1170,9 @@ function (_ref) {
   }, {
     key: "isInSelectedSpan",
     value: function isInSelectedSpan(day) {
-      var _this$props18 = this.props,
-          startDate = _this$props18.startDate,
-          endDate = _this$props18.endDate;
+      var _this$props19 = this.props,
+          startDate = _this$props19.startDate,
+          endDate = _this$props19.endDate;
       return day.isBetween(startDate, endDate);
     }
   }, {
@@ -1120,9 +1190,9 @@ function (_ref) {
   }, {
     key: "isBlocked",
     value: function isBlocked(day) {
-      var _this$props19 = this.props,
-          isDayBlocked = _this$props19.isDayBlocked,
-          isOutsideRange = _this$props19.isOutsideRange;
+      var _this$props20 = this.props,
+          isDayBlocked = _this$props20.isDayBlocked,
+          isOutsideRange = _this$props20.isOutsideRange;
       return isDayBlocked(day) || isOutsideRange(day) || this.doesNotMeetMinimumNights(day);
     }
   }, {
@@ -1143,41 +1213,52 @@ function (_ref) {
       return day.day() === ((firstDayOfWeek || moment.localeData().firstDayOfWeek()) + 6) % 7;
     }
   }, {
+    key: "isFirstPossibleEndDateForHoveredStartDate",
+    value: function isFirstPossibleEndDateForHoveredStartDate(day, hoverDate) {
+      var _this$props21 = this.props,
+          focusedInput = _this$props21.focusedInput,
+          getMinNightsForHoverDate = _this$props21.getMinNightsForHoverDate;
+      if (focusedInput !== END_DATE || !hoverDate || this.isBlocked(hoverDate)) return false;
+      var minNights = getMinNightsForHoverDate(hoverDate);
+      var firstAvailableEndDate = hoverDate.clone().add(minNights, 'days');
+      return isSameDay(day, firstAvailableEndDate);
+    }
+  }, {
     key: "render",
     value: function render() {
-      var _this$props20 = this.props,
-          numberOfMonths = _this$props20.numberOfMonths,
-          orientation = _this$props20.orientation,
-          monthFormat = _this$props20.monthFormat,
-          renderMonthText = _this$props20.renderMonthText,
-          navPrev = _this$props20.navPrev,
-          navNext = _this$props20.navNext,
-          noNavButtons = _this$props20.noNavButtons,
-          onOutsideClick = _this$props20.onOutsideClick,
-          withPortal = _this$props20.withPortal,
-          enableOutsideDays = _this$props20.enableOutsideDays,
-          firstDayOfWeek = _this$props20.firstDayOfWeek,
-          hideKeyboardShortcutsPanel = _this$props20.hideKeyboardShortcutsPanel,
-          daySize = _this$props20.daySize,
-          focusedInput = _this$props20.focusedInput,
-          renderCalendarDay = _this$props20.renderCalendarDay,
-          renderDayContents = _this$props20.renderDayContents,
-          renderCalendarInfo = _this$props20.renderCalendarInfo,
-          renderMonthElement = _this$props20.renderMonthElement,
-          calendarInfoPosition = _this$props20.calendarInfoPosition,
-          onBlur = _this$props20.onBlur,
-          onShiftTab = _this$props20.onShiftTab,
-          onTab = _this$props20.onTab,
-          isFocused = _this$props20.isFocused,
-          showKeyboardShortcuts = _this$props20.showKeyboardShortcuts,
-          isRTL = _this$props20.isRTL,
-          weekDayFormat = _this$props20.weekDayFormat,
-          dayAriaLabelFormat = _this$props20.dayAriaLabelFormat,
-          verticalHeight = _this$props20.verticalHeight,
-          noBorder = _this$props20.noBorder,
-          transitionDuration = _this$props20.transitionDuration,
-          verticalBorderSpacing = _this$props20.verticalBorderSpacing,
-          horizontalMonthPadding = _this$props20.horizontalMonthPadding;
+      var _this$props22 = this.props,
+          numberOfMonths = _this$props22.numberOfMonths,
+          orientation = _this$props22.orientation,
+          monthFormat = _this$props22.monthFormat,
+          renderMonthText = _this$props22.renderMonthText,
+          navPrev = _this$props22.navPrev,
+          navNext = _this$props22.navNext,
+          noNavButtons = _this$props22.noNavButtons,
+          onOutsideClick = _this$props22.onOutsideClick,
+          withPortal = _this$props22.withPortal,
+          enableOutsideDays = _this$props22.enableOutsideDays,
+          firstDayOfWeek = _this$props22.firstDayOfWeek,
+          hideKeyboardShortcutsPanel = _this$props22.hideKeyboardShortcutsPanel,
+          daySize = _this$props22.daySize,
+          focusedInput = _this$props22.focusedInput,
+          renderCalendarDay = _this$props22.renderCalendarDay,
+          renderDayContents = _this$props22.renderDayContents,
+          renderCalendarInfo = _this$props22.renderCalendarInfo,
+          renderMonthElement = _this$props22.renderMonthElement,
+          calendarInfoPosition = _this$props22.calendarInfoPosition,
+          onBlur = _this$props22.onBlur,
+          onShiftTab = _this$props22.onShiftTab,
+          onTab = _this$props22.onTab,
+          isFocused = _this$props22.isFocused,
+          showKeyboardShortcuts = _this$props22.showKeyboardShortcuts,
+          isRTL = _this$props22.isRTL,
+          weekDayFormat = _this$props22.weekDayFormat,
+          dayAriaLabelFormat = _this$props22.dayAriaLabelFormat,
+          verticalHeight = _this$props22.verticalHeight,
+          noBorder = _this$props22.noBorder,
+          transitionDuration = _this$props22.transitionDuration,
+          verticalBorderSpacing = _this$props22.verticalBorderSpacing,
+          horizontalMonthPadding = _this$props22.horizontalMonthPadding;
       var _this$state8 = this.state,
           currentMonth = _this$state8.currentMonth,
           phrases = _this$state8.phrases,

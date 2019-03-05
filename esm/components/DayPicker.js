@@ -222,6 +222,7 @@ function (_ref) {
 
     _this.calendarMonthGridHeight = 0;
     _this.setCalendarInfoWidthTimeout = null;
+    _this.setCalendarMonthGridHeightTimeout = null;
     _this.onKeyDown = _this.onKeyDown.bind(_assertThisInitialized(_this));
     _this.throttledKeyDown = throttle(_this.onFinalKeyDown, 200, {
       trailing: false
@@ -370,6 +371,7 @@ function (_ref) {
     key: "componentWillUnmount",
     value: function componentWillUnmount() {
       clearTimeout(this.setCalendarInfoWidthTimeout);
+      clearTimeout(this.setCalendarMonthGridHeightTimeout);
     }
   }, {
     key: "onKeyDown",
@@ -847,7 +849,7 @@ function (_ref) {
         this.transitionContainer.style.height = "".concat(monthHeight, "px");
 
         if (!this.calendarMonthGridHeight) {
-          setTimeout(function () {
+          this.setCalendarMonthGridHeightTimeout = setTimeout(function () {
             _this5.setState({
               hasSetHeight: true
             });
