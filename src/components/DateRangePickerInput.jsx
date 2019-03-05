@@ -245,8 +245,6 @@ function DateRangePickerInput({
         </div>
       }
 
-      {children}
-
       <DateInput
         id={endDateId}
         placeholder={endDatePlaceholderText}
