@@ -235,6 +235,8 @@ function DateRangePickerInput({
         regular={regular}
       />
 
+      {children}
+
       {
         <div
           {...css(styles.DateRangePickerInput_arrow)}
@@ -266,8 +268,6 @@ function DateRangePickerInput({
         small={small}
         regular={regular}
       />
-
-      {children}
 
       {showClearDates && (
         <button
